@@ -1,9 +1,7 @@
 FROM python:3.6
+LABEL maintainer="virtualda@gmail.com"
 
 ENV PIP_INDEX_URL $PIP_INDEX_URL
-
-ENV AWS_ACCESS_KEY_ID $AWS_ACCESS_KEY_ID
-ENV AWS_SECRET_ACCESS_KEY $AWS_SECRET_ACCESS_KEY
 
 ADD  .  /opt/apps/sample_service
 WORKDIR /opt/apps/sample_service

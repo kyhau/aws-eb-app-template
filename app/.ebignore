@@ -10,7 +10,6 @@ env_test
 .ebignore
 .gitignore
 coverage*.xml
-flake*.log
 junit*.xml
 requirements-build.txt
 requirements-test.txt

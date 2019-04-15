@@ -1,50 +1,42 @@
 # Sample repo template for creating ElasticBeanstalk app
 
-## Elastic Beanstalk Deployment and Configurations
+This repo contains templates for building/deploying an EB application.
+- [app/.ebextensions/](app/.ebextensions)
+- [app/.elasticbeanstalk/](app/.elasticbeanstalk)
+- [app/sample_service/](app/sample_service)
+- [app/.dockerignore](app/.dockerignore)
+- [app/.ebignore](app/.ebignore)
+- [app/.gitignore](app/.gitignore)
+- [app/Dockerfile](app/Dockerfile)
+- [aws/cloudformation/EB-CloudWatchPolicy.template ](aws/cloudformation/EB-CloudWatchPolicy.template)
+- [aws/cloudformation/EB-IAM-Deploy.template](aws/cloudformation/EB-IAM-Deploy.template)
+- [deploy/eb_deployment_helper.sh](deploy/eb_deployment_helper.sh)
+- [deploy/requirements-deploy.txt](deploy/requirements-deploy.txt)
+- [deploy/setup_aws_profile.py](deploy/setup_aws_profile.py)
 
-### Initialise EB Application
-
+## Initialise EB Application and generate .elasticbeanstalk and .gitignore
 Only need to do it once
 
-#### Prerequisites
-
 ```
-pip install awsebcli six
-```
+$ pip install awsebcli six
 
-#### Change profile name to yours
+# Change to the source directory
+$ cd app
 
-```
-APP_NAME="SampleService"
-AWS_PROFILE="k-eb-deploy"
-
-echo "Changing to the source directory ..."
-pushd ../../app
-```
-
-#### Initialise EB Application and generate .elasticbeanstalk and .gitignore
-
-```
-eb init --profile ${AWS_PROFILE}
-
+$ eb init --profile ${AWS_PROFILE}
 # - Region: sydney
-# - Application name: ${SampleService}
+# - Application name: SampleService
 # - Platform version: Docker 17.03.1-ce (or latest)
 # - ssh key: my-sampleservice-key
-```
 
-#### Creating EB Environments
-
-```
-eb create SampleService-dev --cname sampleservice-dev --vpc
-
+$ eb create SampleService-dev --cname sampleservice-dev --vpc
 # See also http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-getting-started.html
 # - Environment Name: SampleService-dev
 # - DNS CNAME prefix: sampleservice-dev
 # - Load balancer type: application
 ```
 
-#### Zip Dockerfile and deploy it to EB
+## Zip Dockerfile and deploy it to EB
 
 ```
 eb deploy [environment-name]
@@ -56,82 +48,48 @@ eb deploy [environment-name]
 eb logs --all
 ```
 
+## Deploy application and update Elastic Beanstalk Environment
 
-### EB configurations and maintenance
+See also [EB CLI Reference: `eb config`](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-config.html).
 
-Use `eb config` to change the environment configuration settings.
-This command saves the environment configuration settings as well as uploads,
-downloads, or lists saved configurations.
+1. To build and test the Docker image for the application. 
+   You need to install `docker` if you want to run it locally:
 
-For details see [EB CLI Reference: `eb config`](
-http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-config.html).
+       $ cd deploy
+       $ ./update_eb_config.sh --build-image 
 
-#### Manage and maintain *saved configuratons*
+2. To also deploy the application and update settings/configurations within EC2 instances:
+  
+       $ cd deploy
+       $ ./update_eb_config.sh --build-image \
+             [--push-image] \
+             --eb-deploy --eb-env [EB_ENV_NAME]
 
-Elastic Beanstalk stores the **saved configurations** in S3.
-You can see the saved configurations from AWS Console or using EB CLI.
+3. To update Elastic Beanstalk Environment for instant change in After Creation state:
 
-1. AWS Console: Elastic Beanstalk > All Applications > SampleService > Saved configurations
-1. EB CLI:
+    1. Make sure you have the latest EB environment first. 
+       Because `aws:elasticbeanstalk:managedactions:platformupdate` is enabled, the Docker/platform version in
+       `Platform:PlatformArn` can be different from the last saved `*.cfg.yml` file.
+    
+           $ cd app
+           $ eb config save [EB_ENV_NAME]
+    
+    2. Edit `app/.elasticbeanstalk/saved_configs/[EB_ENV_NAME].cfg.yml`.
 
-   ```
-   ~/app$ eb config list
-   SampleService-v1
-   SampleService-dev-v1
+    3. Create Pull Request for review.
 
-**To download a saved configuration from S3 using EB CLI**
+    4. Apply the change 
 
-Use: `eb config get [configuration-name]`
-   
-```   
-~/app$ eb config get SampleService-dev-v1
-~/app$ eb config get SampleService-v1
-```
+           $ cd deploy
+           $ ./update_eb_config.sh --eb-config-update --eb-env [EB_ENV_NAME]
 
-**To save the saves configuration settings from the current running environment to S3 using EB CLI**
 
-`eb config save`:
-
-1. Save the environment configuration settings for the current running
-   environment to S3.
-
-1. Also save it locally to `.elasticbeanstalk/saved_configs/[configuration-name].cfg.yml`.
-
-  Modify the saved configuration locally if needed.
-
-**To create a saved configuration using EB CLI**
-
-Use: `eb config save --cfg [configuration-name] [environment-name]`
-   
-```   
-~/app$ eb config save --cfg SampleService-dev-v1 SampleService-dev
-~/app$ eb config save --cfg SampleService-v1 SampleService
-```
-
-`eb config save`:
-
-1. Save the environment configuration settings for the current running
-   environment to S3.
-
-1. Also save it locally to `.elasticbeanstalk/saved_configs/[configuration-name].cfg.yml`.
-
-  Modify the saved configuration locally if needed.
-
-**To upload the local copy of saved configuration to S3**
-
-Use: `eb config put [configuration-name]`
-
-```
-~/app eb config put SampleService-dev-v1
-~/app eb config put SampleService-v1
-```
-
-**To ssh to the EC2 using EB CLI**
+## To ssh to the EC2 using EB CLI
 
 Use: `eb ssh [environment-name] --profile [profile-name]`
 
 
-### HTTPS / SSL Certificate
+## HTTPS / SSL Certificate
 
 You can use a certificate stored in IAM with Elastic Load Balancing load balancers and CloudFront distributions.
 
@@ -156,7 +114,7 @@ CALL aws iam list-server-certificates --profile k-eb-deploy
 For details see [Update a certificate to IAM](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-ssl-upload.html).
 
     
-### Ignore files
+## Ignore files
 
 If no .ebignore is present, but a .gitignore is, the EB CLI will ignore files
 specified in the .gitignore. If an .ebignore file is present, the EB CLI will
