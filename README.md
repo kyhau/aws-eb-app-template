@@ -36,17 +36,6 @@ $ eb create SampleService-dev --cname sampleservice-dev --vpc
 # - Load balancer type: application
 ```
 
-## Zip Dockerfile and deploy it to EB
-
-```
-eb deploy [environment-name]
-```
-
-#### Other useful commands
-
-```
-eb logs --all
-```
 
 ## Deploy application and update Elastic Beanstalk Environment
 
@@ -90,7 +79,15 @@ See also [EB CLI Reference: `eb config`](http://docs.aws.amazon.com/elasticbeans
 
 ## To ssh to the EC2 using EB CLI
 
-Use: `eb ssh [environment-name] --profile [profile-name]`
+```
+eb ssh [EB_ENV_NAME] --profile [profile-name]
+```
+
+## See all logs
+
+```
+eb logs --all
+```
 
 
 ## HTTPS / SSL Certificate
@@ -117,7 +114,7 @@ CALL aws iam list-server-certificates --profile k-eb-deploy
 
 For details see [Update a certificate to IAM](http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/configuring-https-ssl-upload.html).
 
-    
+
 ## Ignore files
 
 If no .ebignore is present, but a .gitignore is, the EB CLI will ignore files
