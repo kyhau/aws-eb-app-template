@@ -30,6 +30,8 @@ OptionSettings:
     ELBSubnets: subnet-todo
     ELBScheme: public
     AssociatePublicIpAddress: true
+  aws:autoscaling:asg:
+    MaxSize: '2'
   aws:elasticbeanstalk:managedactions:
     ManagedActionsEnabled: true
     PreferredStartTime: SUN:18:00

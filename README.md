@@ -56,12 +56,12 @@ See also [EB CLI Reference: `eb config`](http://docs.aws.amazon.com/elasticbeans
    You need to install `docker` if you want to run it locally:
 
        $ cd deploy
-       $ ./update_eb_config.sh --build-image 
+       $ ./eb_deployment_helper.sh --build-image 
 
 2. To also deploy the application and update settings/configurations within EC2 instances:
   
        $ cd deploy
-       $ ./update_eb_config.sh --build-image \
+       $ ./eb_deployment_helper.sh --build-image \
              [--push-image] \
              --eb-deploy --eb-env [EB_ENV_NAME]
 
@@ -71,8 +71,12 @@ See also [EB CLI Reference: `eb config`](http://docs.aws.amazon.com/elasticbeans
        Because `aws:elasticbeanstalk:managedactions:platformupdate` is enabled, the Docker/platform version in
        `Platform:PlatformArn` can be different from the last saved `*.cfg.yml` file.
     
-           $ cd app
-           $ eb config save [EB_ENV_NAME]
+           $ cd app/
+           $ eb use [EB_ENV_NAME]              # Ensure all operations take effect to a specific EB environment
+           $ eb config delete [EB_ENV_NAME]    # Delete the named saved configuration (in EB S3)
+           $ eb config save [EB_ENV_NAME]      # Save the environment configuration settings for the current running
+                                               # environment to .elasticbeanstalk/saved_configs/ with the filename
+                                               # [EB_ENV_NAME].cfg.yml.
     
     2. Edit `app/.elasticbeanstalk/saved_configs/[EB_ENV_NAME].cfg.yml`.
 
@@ -81,7 +85,7 @@ See also [EB CLI Reference: `eb config`](http://docs.aws.amazon.com/elasticbeans
     4. Apply the change 
 
            $ cd deploy
-           $ ./update_eb_config.sh --eb-config-update --eb-env [EB_ENV_NAME]
+           $ ./eb_deployment_helper.sh --eb-config-update --eb-env [EB_ENV_NAME]
 
 
 ## To ssh to the EC2 using EB CLI
