@@ -65,6 +65,7 @@ OptionSettings:
     IamInstanceProfile: aws-elasticbeanstalk-ec2-role
     InstanceType: t2.medium
     EC2KeyName: my-sampleservice-key
+    MonitoringInterval: 1
 EnvironmentTier:
   Type: Standard
   Name: WebServer
