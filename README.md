@@ -10,6 +10,8 @@ This repo contains templates for building/deploying an EB application.
 - [app/Dockerfile](app/Dockerfile)
 - [aws/cloudformation/EB-CloudWatchPolicy.template ](aws/cloudformation/EB-CloudWatchPolicy.template)
 - [aws/cloudformation/EB-IAM-Deploy.template](aws/cloudformation/EB-IAM-Deploy.template)
+- [aws/cloudformation/S3-Configs.template](aws/cloudformation/S3-Configs.template)
+- [aws/cloudformation/S3-RootLogs.template](aws/cloudformation/S3-RootLogs.template)
 - [deploy/eb_deployment_helper.sh](deploy/eb_deployment_helper.sh)
 - [deploy/requirements-deploy.txt](deploy/requirements-deploy.txt)
 - [deploy/setup_aws_profile.py](deploy/setup_aws_profile.py)
