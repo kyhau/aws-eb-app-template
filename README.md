@@ -90,6 +90,50 @@ eb logs --all
 ```
 
 
+## Locations of file on EB EC2 Instances
+
+### `/opt/elasticbeanstalk/hooks/appdeploy/`
+
+1. `opt/elasticbeanstalk/hooks/appdeploy/pre/`
+     1. `00clean_dir.sh` - Clean directory where source will be downloaded, removes docker containers and images.
+     2. `01unzip.sh` - Download source from S3 and unzip it.
+     3. `02loopback-check.sh` - Verify you don't have docker loopback setting set.
+     4. `03build.sh` - Build your docker image from your `Dockerfile` or `Dockerrun.aws.json`. 
+
+2. `/opt/elasticbeanstalk/hooks/appdeploy/enact/`
+     1. `00run.sh` - Execute `docker run` against the image that was generated in the pre stage based on environment
+        variables and settings in your `Dockerrun.aws.json`.
+     2. `01flip.sh` - Convert from aws-staging to current-app etc.
+
+3. `/opt/elasticbeanstalk/hooks/appdeploy/post/`
+
+See also
+- [elastic-beanstalk docker app not updating upon deploy](
+  https://stackoverflow.com/questions/27051683/elastic-beanstalk-docker-app-not-updating-upon-deploy/27083854)
+- [Elastic Beanstalk: Under the Hood](https://dev.bleacherreport.com/eb-under-the-hood-e7988736919f)
+- [Elastic Beanstalk: Under the Hood 2  - Nginx](
+  https://dev.bleacherreport.com/elastic-beanstalk-under-the-hood-2-nginx-89599e2179fb)
+
+
+### Log Location on Amazon EC2 Instances
+
+- /var/log/eb-activity.log
+- /var/log/eb-commandprocessor.log
+- /var/log/eb-docker/containers/eb-current-app/stdouterr.log
+- /var/log/docker
+- /var/log/docker-events.log
+- /var/log/nginx/access.log
+- /var/log/nginx/error.log
+- /opt/elasticbeanstalk/tasks/taillogs.d/
+- /opt/elasticbeanstalk/tasks/bundlelogs.d/
+- /opt/elasticbeanstalk/tasks/publishlogs.d/
+- /opt/python/log/
+
+See also
+- https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/AWSHowTo.cloudwatchlogs.html
+- https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/using-features.logging.html
+
+
 ## HTTPS / SSL Certificate
 
 You can use a certificate stored in IAM with Elastic Load Balancing load balancers and CloudFront distributions.
